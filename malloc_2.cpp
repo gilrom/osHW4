@@ -1,6 +1,6 @@
 #include <unistd.h>
 #include <cstring>
-#include "malloc_2.h"
+// #include "malloc_2.h"
 
 //Macroes
 #define MAX_SIZE 100000000
