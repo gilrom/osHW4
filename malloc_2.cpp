@@ -1,5 +1,7 @@
 #include <unistd.h>
 #include <cstring>
+#include "malloc_2.h"
+
 //Macroes
 #define MAX_SIZE 100000000
 
@@ -62,7 +64,7 @@ void* smalloc(size_t size)
         num_allocated_bytes += size;
         return head + 1;
     }
-    //find free space
+    //find free block
     MallocMetadata* ptr = get_free_block(size);
     if(ptr)//if found
     {
@@ -77,6 +79,7 @@ void* smalloc(size_t size)
     ptr->next = NULL;
     ptr->size = size;
     ptr->is_free = false;
+    tail->next = ptr;
     tail = ptr;
     num_allocated_blocks++;
     num_allocated_bytes += size;
@@ -89,7 +92,7 @@ void* scalloc(size_t num, size_t size)
     void* ptr = smalloc(size*num);
     if(!ptr)
         return NULL;
-    memset(ptr,0,size);//set bytes to zero
+    memset(ptr,0,size*num);//set bytes to zero
     return ptr;
 }
 
@@ -110,7 +113,7 @@ void* srealloc(void* oldp, size_t size)
     CHECK_SIZE(size);
     if(!oldp)
         return smalloc(size);
-    MallocMetadata* old_meta = (MallocMetadata*)oldp - 1;
+    MallocMetadata* old_meta = ((MallocMetadata*)oldp) - 1;
     if(old_meta->size >= size)
         return oldp;
     void* newp = smalloc(size);
@@ -118,6 +121,7 @@ void* srealloc(void* oldp, size_t size)
         return NULL;
     memcpy(newp, oldp, old_meta->size);//copy bytes
     sfree(oldp);
+    return newp;
 }
 
 size_t _num_free_blocks()

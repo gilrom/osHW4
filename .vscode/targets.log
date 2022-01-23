@@ -1,0 +1,229 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+make: *** No rule to make target 'all'.  Stop.
+ 
+# GNU Make 4.1
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2014 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Sun Jan 23 19:32:35 2022
+
+# Variables
+
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# automatic
+?F = $(notdir $?)
+# default
+.SHELLFLAGS := -c
+# environment
+VSCODE_AGENT_FOLDER = /home/student/.vscode-server
+# environment
+VSCODE_LOG_NATIVE = false
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# automatic
+@F = $(notdir $@)
+# default
+MAKE_VERSION := 4.1
+# makefile
+CURDIR := /home/student/osHW4
+# makefile
+SHELL = /bin/sh
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en","availableLanguages":{}}
+# environment
+_ = /home/student/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/node
+# makefile (from 'makefile', line 1)
+MAKEFILE_LIST :=  makefile
+# 'override' directive
+GNUMAKEFLAGS := 
+# environment
+XDG_DATA_DIRS = /usr/local/share:/usr/share:/var/lib/snapd/desktop
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+LESSOPEN = | /usr/bin/lesspipe %s
+# environment
+VSCODE_CWD = /home/student
+# environment
+SSH_CONNECTION = 192.168.111.1 50943 192.168.111.129 22
+# environment
+PATH = /home/student/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/bin:/home/student/.local/bin:/home/student/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+# environment
+XDG_RUNTIME_DIR = /run/user/1000
+# environment
+VSCODE_LOG_STACK = false
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
+# environment
+LS_COLORS = 
+# automatic
+%F = $(notdir $%)
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+PWD = /home/student/osHW4
+# environment
+VSCODE_IPC_HOOK_CLI = /run/user/1000/vscode-ipc-7d6a6d6c-8457-4096-bf29-a82d413fff5d.sock
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/server/remoteExtensionHostProcess
+# environment
+HOME = /home/student
+# environment
+LESSCLOSE = /usr/bin/lesspipe %s %s
+# environment
+LOGNAME = student
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+# automatic
++F = $(notdir $+)
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+MAKELEVEL := 0
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+SHLVL = 3
+# makefile (from 'makefile', line 1)
+CC = g++
+# environment
+XDG_SESSION_ID = 22
+# environment
+USER = student
+# makefile
+.DEFAULT_GOAL := test2
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# default
+MAKE_COMMAND := make
+# default
+.VARIABLES := 
+# automatic
+*F = $(notdir $*)
+# makefile
+MAKEFLAGS = pqrR
+# environment
+MFLAGS = -pqrR
+# environment
+SSH_CLIENT = 192.168.111.1 50943 22
+# environment
+MAIL = /var/mail/student
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# environment
+BROWSER = /home/student/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/bin/helpers/browser.sh
+# default
+MAKEFILES := 
+# automatic
+<F = $(notdir $<)
+# environment
+LC_ALL = C
+# automatic
+^F = $(notdir $^)
+# default
+SUFFIXES := 
+# default
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+# environment
+VSCODE_INJECT_NODE_MODULE_LOOKUP_PATH = /home/student/.vscode-server/bin/899d46d82c4c95423fb7e10e68eba52050e30ba3/remote/node_modules
+# default
+.RECIPEPREFIX := 
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# environment
+LANG = C
+# environment
+VSCODE_EXTHOST_WILL_SEND_SOCKET = true
+# variable set hash-table stats:
+# Load=68/1024=7%, Rehash=0, Collisions=8/93=9%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 2050, inode 933064): 13 files, no impossibilities.
+
+# 13 files, no impossibilities in 1 directories.
+
+# Implicit Rules
+
+%.o: %.c
+#  recipe to execute (from 'makefile', line 4):
+	$(CC) -c -o -g $@ $<
+
+# 1 implicit rules, 0 (0.0%) terminal.
+
+# Files
+
+# Not a target:
+all:
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+tamuz_modified_tests_for_malloc_2.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-01-23 19:32:25.050325857
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+malloc_2.o:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+test2: malloc_2.o tamuz_modified_tests_for_malloc_2.o
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'makefile', line 7):
+	$(CC) -g -o test2 malloc_2.o tamuz_modified_tests_for_malloc_2.o
+
+# files hash-table stats:
+# Load=7/1024=1%, Rehash=0, Collisions=0/19=0%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 20 / storage = 224 B / avg = 11 B
+# current buf: size = 8162 B / used = 224 B / count = 20 / avg = 11 B
+
+# strcache performance: lookups = 28 / hit rate = 28%
+# hash-table stats:
+# Load=20/8192=0%, Rehash=0, Collisions=1/28=4%
+# Finished Make data base on Sun Jan 23 19:32:35 2022
+
+ 

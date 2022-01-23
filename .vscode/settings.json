@@ -1,0 +1,10 @@
+{
+    "makefile.extensionOutputFolder": "./.vscode",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/student/osHW4",
+            "binaryPath": "/home/student/osHW4/test2",
+            "binaryArgs": []
+        }
+    ]
+}

@@ -1,0 +1,5 @@
+make test2 --dry-run --keep-going --print-directory
+make: Entering directory '/home/student/osHW4'
+make: 'test2' is up to date.
+make: Leaving directory '/home/student/osHW4'
+ 
