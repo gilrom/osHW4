@@ -1,7 +1,5 @@
-make test2 --dry-run --always-make --keep-going --print-directory
+make test3 --dry-run --keep-going --print-directory
 make: Entering directory '/home/student/osHW4'
-g++    -c -o malloc_2.o malloc_2.cpp
-g++    -c -o tamuz_modified_tests_for_malloc_2.o tamuz_modified_tests_for_malloc_2.cpp
-g++ -g -o test2 malloc_2.o tamuz_modified_tests_for_malloc_2.o
+make: 'test3' is up to date.
 make: Leaving directory '/home/student/osHW4'
  

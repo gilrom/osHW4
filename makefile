@@ -1,9 +1,9 @@
-CC=g++
+# CC=g++
 
-%.o: %.c
-	$(CC) -c -o -g $@ $<
+# %.o: %.c
+# 	$(CC) -c -o -g $@ $<
 
-test2: malloc_2.o tamuz_modified_tests_for_malloc_2.o 
-	$(CC) -g -o test2 malloc_2.o tamuz_modified_tests_for_malloc_2.o
+test3:
+	g++ -std=c++14 -Wall -g -o test3 malloc_3.cpp malloc_3.h test.cpp
 
 

@@ -1,7 +1,10 @@
 #include <unistd.h>
 #include <cstring>
 #include <sys/mman.h>
-// #include "malloc_2.h"
+#include <iostream>
+#include "malloc_3.h"
+
+using namespace std;
 
 //Macroes
 #define MAX_SIZE 100000000
@@ -62,6 +65,7 @@ MallocMetadata* _enlarge_wilderness(size_t size)
         //increase sbrk
         MallocMetadata* ptr;
         SBRK_META(ptr, size - META_SIZE); //no need for extra meta
+        num_allocated_bytes += size;
         wilderness->size += size;
     }
     return wilderness;
@@ -102,7 +106,7 @@ void _add_free_block(MallocMetadata* to_add)
                     histo[i] = to_add;//change head
                 return;        
             }
-            else if (curr->next_free = NULL)
+            else if (curr->next_free == NULL)
             {
                 to_add->prev_free = curr;
                 curr->next_free = to_add;
@@ -119,25 +123,37 @@ void _add_free_block(MallocMetadata* to_add)
  * delete free block from free list (unfree)
  * @param to_del
  * block to delete
+ * @param size optional param for wilderness block only
  */
-void _delete_free_block(MallocMetadata* to_del)
+void _delete_free_block(MallocMetadata* to_del, size_t size = 0)
 {
     if(!to_del)
         return;
     num_free_blocks--;
-    num_free_bytes -= to_del->size;
+    int i;
+    if(size)
+    {
+        i = size / BIN_RANGE;
+        num_free_bytes -= size;
+    }
+    else
+    {
+        i = to_del->size / BIN_RANGE;
+        num_free_bytes -= to_del->size;
+    }
     to_del->is_free = false;
-    int i = to_del->size / BIN_RANGE;
     if(to_del->prev_free == NULL)//if head
     {
-        to_del->next_free->prev_free = NULL;
+        if(to_del->next_free)
+            to_del->next_free->prev_free = NULL;
         histo[i] = to_del->next_free;
         to_del->next_free = NULL;
         to_del->prev_free = NULL;
         return;
     }
     to_del->prev_free->next_free = to_del->next_free;
-    to_del->next_free->prev_free = to_del->prev_free;
+    if(to_del->next_free)
+        to_del->next_free->prev_free = to_del->prev_free;
     to_del->next_free = NULL;
     to_del->prev_free = NULL;
 }
@@ -161,8 +177,12 @@ void _try_split(MallocMetadata* blk, size_t alloc_size)
         free_part->prev = blk;
         free_part->size = blk->size - alloc_size - META_SIZE;
         free_part->is_free = true;
+        if(blk == wilderness)
+            wilderness = free_part;
         blk->next = free_part;
         blk->size = alloc_size;
+        num_allocated_blocks++;
+        num_allocated_bytes -= META_SIZE;
         _add_free_block(free_part);
     }
 }
@@ -185,9 +205,12 @@ bool _try_merge_lower(MallocMetadata** blk)
             _delete_free_block((*blk)->prev);
             //merge blocks
             (*blk)->prev->next = (*blk)->next;
-            (*blk)->next->prev = (*blk)->prev;
+            if((*blk)->next)
+                (*blk)->next->prev = (*blk)->prev;
             (*blk)->prev->size += META_SIZE + (*blk)->size;
             (*blk) = (*blk)->prev;
+            if((*blk)->next == NULL)
+                wilderness = (*blk);
             (*blk)->is_free = is_free;
             num_allocated_blocks--;
             num_allocated_bytes += META_SIZE;
@@ -214,7 +237,10 @@ bool _try_merge_upper(MallocMetadata* blk)
             _delete_free_block(blk->next);
             blk->size += blk->next->size + META_SIZE;
             blk->next = blk->next->next;
-            blk->next->prev = blk;
+            if(blk->next == NULL)
+                wilderness = blk;
+            else
+                blk->next->prev = blk;
             blk->is_free = is_free;
             num_allocated_blocks--;
             num_allocated_bytes += META_SIZE;
@@ -235,7 +261,6 @@ bool _try_merge_upper(MallocMetadata* blk)
 MallocMetadata* _try_merge(MallocMetadata* blk)
 {
     if(!blk) return blk;
-    if(!blk->is_free) return blk;
     bool merged = false;
     merged = _try_merge_lower(&blk); //by refrence so blk will change
     merged = merged || _try_merge_upper(blk);
@@ -275,6 +300,7 @@ void* smalloc(size_t size)
     {
         MallocMetadata* ptr;
         MMAP_META(ptr, size);
+        ptr->size = size;
         num_allocated_blocks++;
         num_allocated_bytes += size;
         return ptr + 1;
@@ -294,10 +320,12 @@ void* smalloc(size_t size)
         {
             if(wilderness->is_free)
             {
-                if(_enlarge_wilderness((size - wilderness->size)))
+                size_t old_size = wilderness->size;
+                if(_enlarge_wilderness((size - old_size)))
                 {
-                    num_allocated_bytes += (size - wilderness->size);
-                    return wilderness;
+                    wilderness->is_free = false;
+                    _delete_free_block(wilderness, old_size);
+                    return wilderness+1;
                 }
                 return NULL;
             }
@@ -364,21 +392,43 @@ void* srealloc(void* oldp, size_t size)
         return smalloc(size);
     MallocMetadata* old_meta = ((MallocMetadata*)oldp) - 1;
     if(old_meta->size >= size)// a
+    {
+        if(size >= LARGE_SIZE)//mapped
+        {
+            munmap((char*)oldp+size, old_meta->size - size);
+            num_allocated_bytes -= (old_meta->size - size);
+            old_meta->size = size;
+            return oldp;
+        }
+        _try_split(old_meta, size);
         return oldp;
-
+    }
     if(old_meta->size >= LARGE_SIZE)//mapped block
     {
         MallocMetadata* ptr;
         MMAP_META(ptr, size);
         num_allocated_bytes += size - old_meta->size;
         memcpy(ptr+1, oldp, old_meta->size);
+        ptr->size = size;
         munmap(old_meta, old_meta->size + META_SIZE);
         return ptr + 1;
     }
     if(old_meta == wilderness) //wilderness case
     {
-        _enlarge_wilderness(size - old_meta->size);
-        num_allocated_bytes += size - old_meta->size;
+        MallocMetadata* to_ret;
+        _try_merge(wilderness);
+        if(wilderness != old_meta)
+        {
+            if(wilderness->size >= size)
+            {
+                memmove(wilderness+1, oldp, old_meta->size);
+                to_ret = wilderness;
+                _try_split(wilderness, size);
+                return to_ret + 1;
+            }
+        }
+        _enlarge_wilderness(size - wilderness->size);
+        memmove(wilderness+1, oldp, old_meta->size);
         return wilderness + 1;
     }
     if(old_meta->prev)//b
@@ -453,4 +503,25 @@ size_t _num_meta_data_bytes()
 size_t _size_meta_data()
 {
     return sizeof(MallocMetadata);
+}
+
+
+#define MAX_ALC 23
+int main()
+{
+    int default_size = 2240;
+    void* m = smalloc(1);
+    sfree(m);
+    void* g [MAX_ALC];
+    for (int i=0; i<4; ++i)
+    {
+        g[i] = smalloc(default_size);
+
+    }
+    sfree(g[0]);
+    sfree(g[2]);
+    srealloc(g[3], default_size *3);
+    // void* tmp = smalloc(default_size / 3);
+    // tmp = srealloc(g[4], default_size + default_size / 3);
+    cout << num_allocated_blocks;
 }
