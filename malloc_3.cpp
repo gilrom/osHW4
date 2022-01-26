@@ -158,34 +158,6 @@ void _delete_free_block(MallocMetadata* to_del, size_t size = 0)
     to_del->prev_free = NULL;
 }
 
-/**
- * @brief 
- * try to split block to data block and free block
- * adds the free part to free list
- * @param blk
- * block to split
- * @param alloc_size size of allocated part
- */
-void _try_split(MallocMetadata* blk, size_t alloc_size)
-{
-    if(!blk)
-        return;
-    if(blk->size - alloc_size >= MIN_SPLIT_SIZE + META_SIZE)
-    {
-        MallocMetadata* free_part = (MallocMetadata*)((char*)blk + META_SIZE + alloc_size);
-        free_part->next = blk->next;
-        free_part->prev = blk;
-        free_part->size = blk->size - alloc_size - META_SIZE;
-        free_part->is_free = true;
-        if(blk == wilderness)
-            wilderness = free_part;
-        blk->next = free_part;
-        blk->size = alloc_size;
-        num_allocated_blocks++;
-        num_allocated_bytes -= META_SIZE;
-        _add_free_block(free_part);
-    }
-}
 
 /**
  * @brief 
@@ -269,6 +241,38 @@ MallocMetadata* _try_merge(MallocMetadata* blk)
         return _try_merge(blk);//recursive call
     }
     return blk;
+}
+
+/**
+ * @brief 
+ * try to split block to data block and free block
+ * adds the free part to free list
+ * @param blk
+ * block to split
+ * @param alloc_size size of allocated part
+ */
+void _try_split(MallocMetadata* blk, size_t alloc_size)
+{
+    if(!blk)
+        return;
+    if(blk->size - alloc_size >= MIN_SPLIT_SIZE + META_SIZE)
+    {
+        MallocMetadata* free_part = (MallocMetadata*)((char*)blk + META_SIZE + alloc_size);
+        free_part->next = blk->next;
+        if(blk->next)
+            blk->next->prev = free_part;
+        free_part->prev = blk;
+        free_part->size = blk->size - alloc_size - META_SIZE;
+        free_part->is_free = true;
+        if(blk == wilderness)
+            wilderness = free_part;
+        blk->next = free_part;
+        blk->size = alloc_size;
+        num_allocated_blocks++;
+        num_allocated_bytes -= META_SIZE; 
+        _try_merge(free_part);
+        _add_free_block(free_part);
+    }
 }
 
 /**
@@ -506,22 +510,29 @@ size_t _size_meta_data()
 }
 
 
-#define MAX_ALC 23
-int main()
-{
-    int default_size = 2240;
-    void* m = smalloc(1);
-    sfree(m);
-    void* g [MAX_ALC];
-    for (int i=0; i<4; ++i)
-    {
-        g[i] = smalloc(default_size);
+// #define MAX_ALC 23
+// int main()
+// {
+//     int default_block_size = 2240;
+//     void* m = smalloc(1);
+//     sfree(m);
+//     void* array [MAX_ALC];
+//     for (int i=0; i<MAX_ALC; ++i)
+//     {
+//         array[i] = smalloc(default_block_size);
 
-    }
-    sfree(g[0]);
-    sfree(g[2]);
-    srealloc(g[3], default_size *3);
-    // void* tmp = smalloc(default_size / 3);
-    // tmp = srealloc(g[4], default_size + default_size / 3);
-    cout << num_allocated_blocks;
-}
+//     }
+//     sfree(array[0]);
+//     smalloc(default_block_size / 3);
+//     sfree(array[3]);
+//     sfree(array[6]);
+//     srealloc(array[4], default_block_size + default_block_size / 3);
+//     srealloc(array[5], default_block_size + default_block_size / 3);
+//     sfree(array[10]);
+//     srealloc(array[9], default_block_size + default_block_size / 3);
+//     sfree(array[12]);
+//     srealloc(array[13], default_block_size + default_block_size / 3);
+//     // void* tmp = smalloc(default_size / 3);
+//     // tmp = srealloc(g[4], default_size + default_size / 3);
+//     cout << num_allocated_blocks;
+// }
